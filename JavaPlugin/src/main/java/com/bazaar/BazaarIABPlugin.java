@@ -33,20 +33,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 	, IabHelper.OnConsumeFinishedListener
 	, IabHelper.OnConsumeMultiFinishedListener
 {
-	private static String BILLING_NOT_RUNNING_ERROR = "The billing service is not running or billing is not supported. Aborting.";
 	private static BazaarIABPlugin mInstance;
-	
+
 	private IabHelper mHelper;
+	private static String BILLING_NOT_RUNNING_ERROR = "The billing service is not running or billing is not supported. Aborting.";
 	private List<Purchase> mPurchases = new ArrayList();
 	private List<SkuDetails> mSkus;
-	
-	public static BazaarIABPlugin instance()
-	{
-		if (mInstance == null)
-			mInstance = new BazaarIABPlugin();
-		
-		return mInstance;
-	}
 	
 	public IabHelper getIabHelper()
 	{
@@ -59,7 +51,15 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper != null)
 			mHelper.enableDebugLogging(true);
 	}
-	
+
+	public static BazaarIABPlugin instance()
+	{
+		if (mInstance == null)
+			mInstance = new BazaarIABPlugin();
+
+		return mInstance;
+	}
+
 	public void init(String publicKey)
 	{
 		IABLogger.logEntering(getClass().getSimpleName(), "init", publicKey);
