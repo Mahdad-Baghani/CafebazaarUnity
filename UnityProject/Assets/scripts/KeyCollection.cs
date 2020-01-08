@@ -1,35 +1,32 @@
 ﻿using BazaarPlugin;
 using UnityEngine;
 
-public class KeyCollection : MonoBehaviour, ICachable<IABRecord>/*, IEventListner*/
+public class KeyCollection : MonoBehaviour, ICachable<IABRecord>
 {
     private SaveSystem m_saveSystem;
     #region class methods
-    private void Start()
-    {
-        InvalidateCache();
-    }
-
     private void OnEnable()
     {
         m_saveSystem = new SaveSystem();
-        //HookEvents();
+        InvalidateCache();
     }
-
+    
     private void OnDisable()
     {
-        //UnhookEvents();
+        m_saveSystem = null;
+        InvalidateCache();
+
     }
     #endregion
 
     #region ICachable impl
-    public bool isCacheValid { get; private set; }
+    public bool isCacheValid { get; private set; } = false;
 
     public IABRecord cachedObj
     {
         get
-        { 
-            if (!isCacheValid) 
+        {
+            if (!isCacheValid || _cached == null)
             {
                 _cached = m_saveSystem.LoadPurchase();
                 isCacheValid = true;
@@ -43,55 +40,35 @@ public class KeyCollection : MonoBehaviour, ICachable<IABRecord>/*, IEventListne
     }
 
 
-    private IABRecord _cached;
+    private IABRecord _cached = null;
 
     public void InvalidateCache()
     {
+        _cached = null;
         isCacheValid = false;
     }
     #endregion
-    //#region IEventlistner impl
-    //public void HookEvents()
-    //{
-    //    IABEventManager.purchaseFailedEvent += IABEventManager_purchaseFailedEvent;
-    //    IABEventManager.purchaseSucceededEvent += IABEventManager_purchaseSucceededEvent;
-    //}
 
-
-    //public void UnhookEvents()
-    //{
-    //    IABEventManager.purchaseFailedEvent -= IABEventManager_purchaseFailedEvent;
-    //    IABEventManager.purchaseSucceededEvent -= IABEventManager_purchaseSucceededEvent;
-    //}
-
-    //private void IABEventManager_purchaseFailedEvent(string obj)
-    //{
-
-    //}
-
-    //private void IABEventManager_purchaseSucceededEvent(BazaarPurchase obj)
-    //{
-    //    cachedObj.AddKeyRecord(obj.PurchaseToken);
-    //}
-
-    //#endregion
-
-    internal bool RetrieveKey(string m_skuDetail)
+    internal KeyConsumptionRecord RetrieveKey(string m_skuDetail)
     {
-        return cachedObj.SinglePurchaseExists(m_skuDetail);
+        return cachedObj.GetSinglePurchase(m_skuDetail);
     }
 
-    internal void BuyKeyAsync(string sku)
+    internal KeyRecordSituations BuyKeyAsync(BazaarPurchase purchase)
     {
-        BazaarIAB.purchaseProduct(sku);
+        var res = cachedObj.AddKeyRecord(purchase);
+        if (res == KeyRecordSituations.ADDED_SUCCESSFULLY)
+        {
+            m_saveSystem.SavePurchases(cachedObj);
+        }
+        return res;
     }
-    internal KeyRecordSituations ConsumeKey(string sku)
+    internal KeyRecordSituations ConsumeKey(BazaarPurchase purchase)
     {
-        var res = cachedObj.ConsumeKeyRecord(sku);
+        var res = cachedObj.ConsumeKeyRecord(purchase);
         if (res == KeyRecordSituations.CONSUMED_SUCCESSFULLY)
         {
             m_saveSystem.SavePurchases(cachedObj);
-            InvalidateCache();
         }
         return res;
     }

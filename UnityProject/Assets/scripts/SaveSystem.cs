@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class SaveSystem
 {
-    //private SaveSystemUI m_systemUI;
-    // #caution: hacks can be used to find the way around the saved data => free amunitions, ... and thats not good. we want them to progress through the game...
-    // #feature: using an anti-cheat toolkit!!
-    
     #region IAB save/load
     internal void SavePurchases(IABRecord rec)
     {
