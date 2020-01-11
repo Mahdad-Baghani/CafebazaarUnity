@@ -1,4 +1,5 @@
-﻿using BazaarPlugin;
+﻿//using BazaarPlugin;
+using neo.BazaarMock;
 using System.Collections;
 using UnityEngine;
 
@@ -130,7 +131,7 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         Log(obj);
     }
 
-    private void IABEventManager_queryInventorySucceededEvent(System.Collections.Generic.List<BazaarPurchase> purchases, System.Collections.Generic.List<BazaarSkuInfo> skus)
+    private void IABEventManager_queryInventorySucceededEvent(System.Collections.Generic.List<BazaarPlugin.BazaarPurchase> purchases, System.Collections.Generic.List<BazaarPlugin.BazaarSkuInfo> skus)
     {
         if (purchases.Count == 0)
         {
@@ -149,13 +150,13 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         Log("buy failed; errCode : " + obj);
     }
 
-    private void IABEventManager_purchaseSucceededEvent(BazaarPurchase obj)
+    private void IABEventManager_purchaseSucceededEvent(BazaarPlugin.BazaarPurchase obj)
     {
         var res = _keys.BuyKeyAsync(obj);
         Log(string.Format("buy succeeded : pId: {0}, pToken: {1}, clinet-side res: {2}", obj.ProductId, obj.PurchaseToken, res));
     }
      
-    private void IABEventManager_consumePurchaseSucceededEvent(BazaarPurchase purchase)
+    private void IABEventManager_consumePurchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
     {
         var res = _keys.ConsumeKey(purchase);
         Log("Consume sucseeded:" + purchase.ProductId + "; client-side res: " + res);
