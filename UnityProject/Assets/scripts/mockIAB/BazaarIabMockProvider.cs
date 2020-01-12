@@ -1,6 +1,8 @@
 ﻿namespace neo.BazaarMock
 {
-    using BazaarPlugin;
+    using neo.BazaarRewrite;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using SimpleJSON;
     using System;
     using System.Collections;
@@ -60,30 +62,55 @@
 
         public static void queryInventory(string[] skus)
         {
-            JSONNode skuinfs = new JSONArray();
+            //JSONNode skuinfs = new JSONArray();
+            //for (int i = 0; i < m_availableSkus.Length; i++)
+            //{
+            //    JSONNode node = new JSONClass();
+            //    node["productId"] = m_availableSkus[i];
+            //    skuinfs.Add(node);
+            //}
+
+            //JSONNode purchases = new JSONNode();
+            //foreach (var key in m_inventory.Keys)
+            //{
+            //    if (m_inventory[key] == null)
+            //    {
+            //        continue;
+            //    }
+            //    var node = new JSONNode();
+            //    node["productId"] =  new JSONNode() { Value = key };
+            //    node.Add("purchaseToken", new JSONNode() { Value = UnityEngine.Random.value.ToString() });
+            //    purchases.Add(node);
+            //}
+            //JSONNode inv = new JSONClass();
+            //inv.Add("skus", skuinfs);
+
+            //m_eventManager.queryInventorySucceeded(inv);
+
+            List<BazaarSkuInfo> skusinfs = new List<BazaarSkuInfo>();
             for (int i = 0; i < m_availableSkus.Length; i++)
             {
-                JSONNode node = new JSONClass();
-                node["productId"] = m_availableSkus[i];
-                skuinfs.Add(node);
+                skusinfs.Add(new BazaarSkuInfo() { ProductId = m_availableSkus[i] });
             }
-
-            JSONNode purchases = new JSONNode();
+            List<BazaarPurchase> purchases = new List<BazaarPurchase>();
             foreach (var key in m_inventory.Keys)
             {
                 if (m_inventory[key] == null)
                 {
                     continue;
                 }
-                var node = new JSONNode();
-                node["productId"] =  new JSONNode() { Value = key };
-                node.Add("purchaseToken", new JSONNode() { Value = UnityEngine.Random.value.ToString() });
-                purchases.Add(node);
+                purchases.Add(new BazaarPurchase() { ProductId = key, PurchaseToken = string.Format("{0}", UnityEngine.Random.value) });
             }
-            JSONNode inv = new JSONClass();
-            inv.Add("skus", skuinfs);
-
-            m_eventManager.queryInventorySucceeded(inv);
+            var skuNode = JsonConvert.SerializeObject(skusinfs);
+            var purchaseNode = JsonConvert.SerializeObject(purchases);
+            skuNode = skuNode.Replace(@"\", "");
+            purchaseNode = purchaseNode.Replace(@"\", "");
+            Dictionary<string, string> nodes = new Dictionary<string, string>();
+            nodes.Add("skus", skuNode);
+            nodes.Add("purchases", purchaseNode);
+            var nodesStr = JsonConvert.SerializeObject(nodes);
+            nodesStr = nodesStr.Replace(@"\", "");
+            m_eventManager.queryInventorySucceeded(nodesStr);
         }
 
         internal static void consumeProduct(string currentSku)
