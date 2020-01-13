@@ -782,9 +782,8 @@ MonoBehaviour:
     type: 3}
   skuButtonContentPanel: {fileID: 8459225064798198905}
   skus:
-  - com.creeptechz.key
-  - com.creeptechz.5key
-  - com.creeptechz.10key
+  - 1key
+  - level01_key
   m_text: {fileID: 8459225064569263441}
   m_debugContentPanel: {fileID: 8459225064574805133}
   m_lerpTime: 1
@@ -2089,33 +2088,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3819660373222457259, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
-      propertyPath: m_PreferredHeight
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 3819660373222457259, guid: 40454c33496001c4ea9c0c87205e75da,
-        type: 3}
       propertyPath: m_MinHeight
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3819660373222457259, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
-      propertyPath: m_PreferredWidth
-      value: -1
+      propertyPath: m_PreferredHeight
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
@@ -2129,8 +2113,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6620361579168278412, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
@@ -2434,33 +2428,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3819660373222457259, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
-      propertyPath: m_PreferredHeight
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 3819660373222457259, guid: 40454c33496001c4ea9c0c87205e75da,
-        type: 3}
       propertyPath: m_MinHeight
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3819660373222457259, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
-      propertyPath: m_PreferredWidth
-      value: -1
+      propertyPath: m_PreferredHeight
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
@@ -2474,8 +2453,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5707461909217137189, guid: 40454c33496001c4ea9c0c87205e75da,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6620361579168278412, guid: 40454c33496001c4ea9c0c87205e75da,
         type: 3}

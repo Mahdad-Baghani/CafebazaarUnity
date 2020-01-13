@@ -64,11 +64,7 @@
             JSONNode dataNode = JSON.Parse(jsonStr);
 
             JSONArray purchasesJsonArray = dataNode["purchases"].AsArray;
-            List<BazaarPurchase> purchases = null;
-            if (purchasesJsonArray != null)
-            {
-                purchases = BazaarPurchase.fromJsonArray(purchasesJsonArray); 
-            }
+            var purchases = BazaarPurchase.fromJsonArray(purchasesJsonArray); 
 
             JSONArray skusJsonArray = dataNode["skus"].AsArray;
             var skus = BazaarSkuInfo.fromJsonArray(skusJsonArray);

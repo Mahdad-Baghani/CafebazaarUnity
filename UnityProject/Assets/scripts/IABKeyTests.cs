@@ -145,9 +145,9 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         }
     }
 
-    private void IABEventManager_purchaseFailedEvent(string obj)
+    private void IABEventManager_purchaseFailedEvent(string err)
     {
-        Log("buy failed; errCode : " + obj);
+        Log(string.Format("buy failed; errCode: {0}", err));
     }
 
     private void IABEventManager_purchaseSucceededEvent(BazaarPlugin.BazaarPurchase obj)
@@ -159,12 +159,12 @@ public class IABKeyTests : MonoBehaviour, IEventListner
     private void IABEventManager_consumePurchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
     {
         var res = _keys.ConsumeKey(purchase);
-        Log("Consume sucseeded:" + purchase.ProductId + "; client-side res: " + res);
+        Log(string.Format("Consume sucseeded: {0}; client-side res: {1}", purchase.ProductId, res));
     }
 
     private void IABEventManager_consumePurchaseFailedEvent(string err)
     {
-        Log("Consume failed" + _currentSku + "; errCode: " + err);
+        Log(string.Format("Consume failed: {0}; errCode: {1}", _currentSku, err));
     }
   
     private void Log(string str)
