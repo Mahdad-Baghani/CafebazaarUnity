@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using SimpleJSON;
-using Newtonsoft.Json;
 
 #if UNITY_ANDROID
 
@@ -65,7 +64,6 @@ namespace BazaarPlugin
 
         public void queryInventorySucceeded(string jsonStr)
         {
-            var res = JsonConvert.DeserializeObject<JSONNode>(jsonStr);
             JSONNode dataNode = JSON.Parse(jsonStr);
 
             JSONArray purchasesJsonArray = dataNode["purchases"].AsArray;
