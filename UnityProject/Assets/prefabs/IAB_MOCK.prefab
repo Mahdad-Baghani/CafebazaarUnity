@@ -48,5 +48,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: d647fb6b95de37d42a7d7642f581f9ca, type: 2}
     - {fileID: 11400000, guid: f6036282908cb2145a41a5a7e704c364, type: 2}
     m_billingSupported: 1
+    m_inventoryQueryFails: 0
     m_purchaseQueryFails: 0
     m_consumeQueryFails: 0
