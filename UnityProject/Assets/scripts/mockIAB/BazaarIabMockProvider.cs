@@ -4,7 +4,6 @@
     using SimpleJSON;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
     using static neo.BazaarMock.BazaarIabMockProvider;
 
@@ -146,7 +145,7 @@
                 if (!m_mockParameters.m_consumeQueryFails)
                 {
                     BazaarPurchase purchase;
-                    var resultNode = createMockedBazaarPurchase(currentSku, out purchase);
+                    var resultNode = BazaarMockSkuDefinition.createMockedBazaarPurchase(currentSku, m_mockParameters.m_availableSkus, out purchase);
                     m_eventManager.consumePurchaseSucceeded(resultNode.ToString());
 
                     // actually consume the purchase form the mock inventory
@@ -167,7 +166,7 @@
             if (!m_mockParameters.m_purchaseQueryFails)
             {
                 BazaarPurchase purchase;
-                JSONNode node = createMockedBazaarPurchase(currentSku, out purchase);
+                JSONNode node = BazaarMockSkuDefinition.createMockedBazaarPurchase(currentSku, m_mockParameters.m_availableSkus, out purchase);
                 purchase.fromJson(node.AsObject);
                 // add the item to the mock inventory
                 m_inventory[currentSku] = purchase;
@@ -182,31 +181,6 @@
         {
             // no need to do anything special 
             // I put this function here, so there would be no code change while switching between actual Bazaar servers and the mocked version
-        }
-
-        /// <summary>
-        /// creates a mock of a bazaar purchase
-        /// </summary>
-        /// <param name="currentSku">the sku we're looking for</param>
-        /// <param name="purchase">the raw bazaar purchase to be initialized</param>
-        /// <returns>returns the json node of the bazaar purchase mock</returns>
-        private static JSONNode createMockedBazaarPurchase(string currentSku, out BazaarPurchase purchase)
-        {
-            BazaarMockSkuDefinition p = m_mockParameters.m_availableSkus.ToList().Find(def => def.ProductId == currentSku);
-            JSONNode node = new JSONClass();
-            node["packageName"] = "test";
-            node["orderId"] = "test";
-            node["productId"] = p.ProductId;
-            node["developerPayload"] = "test";
-            node["type"] = p.Type;
-            node["purchaseTime"] = "0";
-            node["purchaseState"] = string.Format("{0}", (int)BazaarPurchase.BazaarPurchaseState.Purchased);
-            node["purchaseToken"] = "test";
-            node["signature"] = "test";
-
-            purchase = new BazaarPurchase();
-            purchase.fromJson(node.AsObject);
-            return node;
         }
     }
 }

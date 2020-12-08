@@ -126,9 +126,9 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         IABEventManager.queryInventorySucceededEvent -= IABEventManager_queryInventorySucceededEvent;
     }
 
-    private void IABEventManager_queryInventoryFailedEvent(string obj)
+    private void IABEventManager_queryInventoryFailedEvent(string err)
     {
-        Log(obj);
+        Log(err);
     }
 
     private void IABEventManager_queryInventorySucceededEvent(System.Collections.Generic.List<BazaarPlugin.BazaarPurchase> purchases, System.Collections.Generic.List<BazaarPlugin.BazaarSkuInfo> skus)
@@ -150,10 +150,10 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         Log(string.Format("buy failed; errCode: {0}", err));
     }
 
-    private void IABEventManager_purchaseSucceededEvent(BazaarPlugin.BazaarPurchase obj)
+    private void IABEventManager_purchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
     {
-        var res = _keys.BuyKeyAsync(obj);
-        Log(string.Format("buy succeeded : pId: {0}, pToken: {1}, clinet-side res: {2}", obj.ProductId, obj.PurchaseToken, res));
+        var res = _keys.BuyKeyAsync(purchase);
+        Log(string.Format("buy succeeded : pId: {0}, pToken: {1}, clinet-side res: {2}", purchase.ProductId, purchase.PurchaseToken, res));
     }
      
     private void IABEventManager_consumePurchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
