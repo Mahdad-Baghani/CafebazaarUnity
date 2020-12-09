@@ -1,6 +1,7 @@
 ﻿using BazaarPlugin;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public enum KeyRecordSituations
@@ -18,36 +19,31 @@ public enum KeyConsumptionRecord
 }
 
 [System.Serializable]
-public class IABRecord 
+public class WalletProviderStub 
 {
-    [SerializeField]
-    [JsonProperty]
-    private List<BazaarKeyRecord> m_keys;
+    private List<BazaarPurchaseRecord> m_keys;
 
-    internal IABRecord()
+    internal WalletProviderStub()
     {
-        m_keys = new List<BazaarKeyRecord>();
+        m_keys = new List<BazaarPurchaseRecord>();
     }
 
-    internal KeyRecordSituations AddKeyRecord(BazaarPurchase purchase)
+    internal async Task<KeyRecordSituations> AddPurchase(BazaarPurchase purchase)
     {
         if (m_keys.Exists(k => k.m_productId == purchase.ProductId))
         {
             var existingKey = m_keys.Find(k => k.m_productId == purchase.ProductId);
-            if (existingKey.m_isUsed)
-            {
-                m_keys.Remove(existingKey);
-                m_keys.Add(new BazaarKeyRecord() { m_isUsed = false, m_purchaseToken = purchase.PurchaseToken, m_productId = purchase.ProductId });
-                return KeyRecordSituations.ADDED_SUCCESSFULLY;
-            }
-            return KeyRecordSituations.EXISTS;
+            if (!existingKey.m_isUsed) return KeyRecordSituations.EXISTS;
+            m_keys.Remove(existingKey);
+            m_keys.Add(new BazaarPurchaseRecord() { m_isUsed = false, m_purchaseToken = purchase.PurchaseToken, m_productId = purchase.ProductId });
+            return KeyRecordSituations.ADDED_SUCCESSFULLY;
         }
 
-        m_keys.Add(new BazaarKeyRecord() { m_isUsed = false, m_purchaseToken = purchase.PurchaseToken, m_productId = purchase.ProductId });
+        m_keys.Add(new BazaarPurchaseRecord() { m_isUsed = false, m_purchaseToken = purchase.PurchaseToken, m_productId = purchase.ProductId });
         return KeyRecordSituations.ADDED_SUCCESSFULLY;
     }
 
-    internal KeyRecordSituations ConsumeKeyRecord(BazaarPurchase purchase)
+    internal async  Task<KeyRecordSituations> ConsumePurchase(BazaarPurchase purchase)
     {
         if (m_keys.Count <= 0) return KeyRecordSituations.DOESNT_EXIST;
 
@@ -60,7 +56,7 @@ public class IABRecord
         return KeyRecordSituations.CONSUMED_SUCCESSFULLY;
     }
 
-    internal KeyConsumptionRecord GetSinglePurchase(string m_skuDetail)
+    internal async Task<KeyConsumptionRecord> GetSinglePurchase(string m_skuDetail)
     {
         if (m_keys.Count <= 0) return KeyConsumptionRecord.NOT_FOUND;
 
@@ -73,7 +69,7 @@ public class IABRecord
     }
 }
 
-internal class BazaarKeyRecord
+internal class BazaarPurchaseRecord
 {
     [SerializeField]
     [JsonProperty]

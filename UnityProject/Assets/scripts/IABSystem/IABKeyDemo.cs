@@ -1,9 +1,14 @@
-﻿//using BazaarPlugin;
-using neo.BazaarMock;
+﻿#if USE_FAKE_BAZAAR
+    using BazaarIAB = neo.BazaarPluginStub.BazaarIAB;
+#else
+    using BazaarPlugin;
+#endif
+
 using System.Collections;
+using BazaarPlugin;
 using UnityEngine;
 
-public class IABKeyTests : MonoBehaviour, IEventListner
+public class IABKeyDemo : MonoBehaviour, IEventListner
 {
     public GameObject buttonPrefab;
     public Transform skuButtonContentPanel;
@@ -13,7 +18,7 @@ public class IABKeyTests : MonoBehaviour, IEventListner
     public RectTransform m_debugContentPanel;
     public float m_lerpTime = 1f;
     
-    KeyCollection _keys;
+    WalletStub _walletStub;
     string _currentSku;
 
     private void OnDestroy()
@@ -35,7 +40,7 @@ public class IABKeyTests : MonoBehaviour, IEventListner
                 return;
             }
             _currentSku = skus[0];
-            _keys = GetComponent<KeyCollection>();
+            _walletStub = new WalletStub(false);
             for (int i = 0; i < skus.Length; i++)
             {
                 var bAddon = Instantiate(buttonPrefab, skuButtonContentPanel).GetComponent<SkuButtonAddon>();
@@ -59,9 +64,9 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         BazaarIAB.queryInventory(skus);
     }
 
-    public void BuyKey()
+    public async void BuyKey()
     {
-        var res = _keys.RetrieveKey(_currentSku);
+        var res = await _walletStub.RetrieveKey(_currentSku);
         switch (res)
         {
             case KeyConsumptionRecord.NOT_FOUND:
@@ -69,7 +74,7 @@ public class IABKeyTests : MonoBehaviour, IEventListner
                 BazaarIAB.purchaseProduct(_currentSku);
                 break;
             case KeyConsumptionRecord.NOT_CONSUMED:
-                Log(string.Format("buy key: {0} is not consumed yet", _currentSku));
+                Log($"buy key: {_currentSku} is not consumed yet");
                 break;
             default:
                 break;
@@ -81,19 +86,19 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         BazaarIAB.consumeProduct(_currentSku);
     }
 
-    public void Retrieve()
+    public async void Retrieve()
     {
-        var res = _keys.RetrieveKey(_currentSku);
+        var res = await _walletStub.RetrieveKey(_currentSku);
         switch (res)
         {
             case KeyConsumptionRecord.CONSUMED:
-                Log(string.Format("Retrieve succeeded: {0} is consumed", _currentSku));
+                Log($"Retrieve succeeded: {_currentSku} is consumed");
                 break;
             case KeyConsumptionRecord.NOT_CONSUMED:
-                Log(string.Format("Retrieve succeeded: {0} is not consumed", _currentSku));
+                Log($"Retrieve succeeded: {_currentSku} is not consumed");
                 break;
             case KeyConsumptionRecord.NOT_FOUND:
-                Log("Failed to retrive the " + _currentSku + " sku");
+                Log("Failed to retrieve the " + _currentSku + " sku");
                 break;
             default:
                 break;
@@ -140,31 +145,32 @@ public class IABKeyTests : MonoBehaviour, IEventListner
         }
         for (int i = 0; i < purchases.Count; i++)
         {
-            var res = _keys.BuyKeyAsync(purchases[i]);
-            Log(string.Format("inv succeeded: pId: {0}, pToken: {1}, client-side res: {2}", purchases[i].ProductId, purchases[i].PurchaseToken, res));
+            var res = _walletStub.BuyKeyAsync(purchases[i]);
+            Log(
+                $"inv succeeded: pId: {purchases[i].ProductId}, pToken: {purchases[i].PurchaseToken}, client-side res: {res}");
         }
     }
 
     private void IABEventManager_purchaseFailedEvent(string err)
     {
-        Log(string.Format("buy failed; errCode: {0}", err));
+        Log($"buy failed; errCode: {err}");
     }
 
     private void IABEventManager_purchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
     {
-        var res = _keys.BuyKeyAsync(purchase);
-        Log(string.Format("buy succeeded : pId: {0}, pToken: {1}, clinet-side res: {2}", purchase.ProductId, purchase.PurchaseToken, res));
+        var res = _walletStub.BuyKeyAsync(purchase);
+        Log($"buy succeeded : pId: {purchase.ProductId}, pToken: {purchase.PurchaseToken}, clinet-side res: {res}");
     }
      
     private void IABEventManager_consumePurchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
     {
-        var res = _keys.ConsumeKey(purchase);
-        Log(string.Format("Consume sucseeded: {0}; client-side res: {1}", purchase.ProductId, res));
+        var res = _walletStub.ConsumeKey(purchase);
+        Log($"Consume succeeded: {purchase.ProductId}; client-side res: {res}");
     }
 
     private void IABEventManager_consumePurchaseFailedEvent(string err)
     {
-        Log(string.Format("Consume failed: {0}; errCode: {1}", _currentSku, err));
+        Log($"Consume failed: {_currentSku}; errCode: {err}");
     }
   
     private void Log(string str)

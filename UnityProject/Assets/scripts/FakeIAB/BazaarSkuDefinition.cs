@@ -3,8 +3,8 @@ using SimpleJSON;
 using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(menuName ="BazaarMock/MockSkuDefinition")]
-public class BazaarMockSkuDefinition : ScriptableObject
+[CreateAssetMenu(menuName ="BazaarStub/SkuDefinition")]
+public class BazaarSkuDefinition : ScriptableObject
 {
     public string Title;
     public string Price;
@@ -18,17 +18,17 @@ public class BazaarMockSkuDefinition : ScriptableObject
     /// <param name="currentSku">the sku we're looking for</param>
     /// <param name="purchase">the raw bazaar purchase to be initialized</param>
     /// <returns>returns the json node of the bazaar purchase mock</returns>
-    public static JSONNode createMockedBazaarPurchase(string currentSku, BazaarMockSkuDefinition[] defs, out BazaarPurchase purchase)
+    public static JSONNode createBazaarPurchaseMock(string currentSku, BazaarSkuDefinition[] defs, out BazaarPurchase purchase)
     {
-        BazaarMockSkuDefinition p = defs.ToList().Find(def => def.ProductId == currentSku);
+        BazaarSkuDefinition p = defs.ToList().Find(def => def.ProductId == currentSku);
         JSONNode node = new JSONClass();
-        node["packageName"] = "test";
-        node["orderId"] = "test";
+        node["packageName"] = p.Title;
         node["productId"] = p.ProductId;
-        node["developerPayload"] = "test";
         node["type"] = p.Type;
+        node["orderId"] = "test";
+        node["developerPayload"] = "test";
         node["purchaseTime"] = "0";
-        node["purchaseState"] = string.Format("{0}", (int)BazaarPurchase.BazaarPurchaseState.Purchased);
+        node["purchaseState"] = $"{(int) BazaarPurchase.BazaarPurchaseState.Purchased}";
         node["purchaseToken"] = "test";
         node["signature"] = "test";
 
