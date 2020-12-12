@@ -5,7 +5,8 @@
 #endif
 
 using System.Collections;
-using BazaarPlugin;
+    using System.Collections.Generic;
+    using BazaarPlugin;
 using UnityEngine;
 
 public class IABKeyDemo : MonoBehaviour, IEventListner
@@ -17,9 +18,9 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
     // UI fields
     public RectTransform m_debugContentPanel;
     public float m_lerpTime = 1f;
-    
-    WalletStub _walletStub;
-    string _currentSku;
+
+    private WalletProviderStub _walletStub;
+    private string _currentSku;
 
     private void OnDestroy()
     {
@@ -31,7 +32,7 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
     {
         try
         {
-            var key = "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC5nloPoQjrAbAsTYl4ZTluzzRA0My6JyPup/2Aoi23EnPpV16A3bReFCcXRYIkGrEYkV8sQOLF9OM3oqcEnZvRMbq+Ux9SEpo3pKAN9LnQ+JnhaJRzodgSgUNJ0C6GpOjcBX0csELsz8w68s0FokYKpysrjbRn9KMUa+Gcq3wJeOhtJGUfvkfByG0itSERfmwD0xhPm49FCRtorhYE6qkmavV2G+fBc8xF+Os19QkCAwEAAQ==";
+            const string key = "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC5nloPoQjrAbAsTYl4ZTluzzRA0My6JyPup/2Aoi23EnPpV16A3bReFCcXRYIkGrEYkV8sQOLF9OM3oqcEnZvRMbq+Ux9SEpo3pKAN9LnQ+JnhaJRzodgSgUNJ0C6GpOjcBX0csELsz8w68s0FokYKpysrjbRn9KMUa+Gcq3wJeOhtJGUfvkfByG0itSERfmwD0xhPm49FCRtorhYE6qkmavV2G+fBc8xF+Os19QkCAwEAAQ==";
             BazaarIAB.init(key);
             HookEvents();
             if (skus.Length <= 0)
@@ -40,11 +41,11 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
                 return;
             }
             _currentSku = skus[0];
-            _walletStub = new WalletStub(false);
-            for (int i = 0; i < skus.Length; i++)
+            _walletStub = new WalletProviderStub();
+            foreach (var sku in skus)
             {
                 var bAddon = Instantiate(buttonPrefab, skuButtonContentPanel).GetComponent<SkuButtonAddon>();
-                bAddon.Initialize(this, skus[i]);
+                bAddon.Initialize(this, sku);
             }
         }
         catch (System.Exception e)
@@ -62,11 +63,12 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
     public void GetInventory()
     {
         BazaarIAB.queryInventory(skus);
+        _walletStub.GetPurchases(skus);
     }
 
     public async void BuyKey()
     {
-        var res = await _walletStub.RetrieveKey(_currentSku);
+        var res = await _walletStub.GetPurchase(_currentSku);
         switch (res)
         {
             case KeyConsumptionRecord.NOT_FOUND:
@@ -88,7 +90,7 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
 
     public async void Retrieve()
     {
-        var res = await _walletStub.RetrieveKey(_currentSku);
+        var res = await _walletStub.GetPurchase(_currentSku);
         switch (res)
         {
             case KeyConsumptionRecord.CONSUMED:
@@ -136,18 +138,17 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
         Log(err);
     }
 
-    private void IABEventManager_queryInventorySucceededEvent(System.Collections.Generic.List<BazaarPlugin.BazaarPurchase> purchases, System.Collections.Generic.List<BazaarPlugin.BazaarSkuInfo> skus)
+    private async void IABEventManager_queryInventorySucceededEvent(List<BazaarPurchase> purchases, List<BazaarSkuInfo> skus)
     {
         if (purchases.Count == 0)
         {
             Log("no item in inventory");
             return;
         }
-        for (int i = 0; i < purchases.Count; i++)
+
+        foreach (var purchase in purchases)
         {
-            var res = _walletStub.BuyKeyAsync(purchases[i]);
-            Log(
-                $"inv succeeded: pId: {purchases[i].ProductId}, pToken: {purchases[i].PurchaseToken}, client-side res: {res}");
+            Log($"inv succeeded: pId: {purchase.ProductId}, pToken: {purchase.PurchaseToken}");
         }
     }
 
@@ -156,15 +157,15 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
         Log($"buy failed; errCode: {err}");
     }
 
-    private void IABEventManager_purchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
+    private async void IABEventManager_purchaseSucceededEvent(BazaarPurchase purchase)
     {
-        var res = _walletStub.BuyKeyAsync(purchase);
-        Log($"buy succeeded : pId: {purchase.ProductId}, pToken: {purchase.PurchaseToken}, clinet-side res: {res}");
+        var res = await _walletStub.AddPurchase(purchase);
+        Log($"buy succeeded : pId: {purchase.ProductId}, pToken: {purchase.PurchaseToken}, client-side res: {res}");
     }
      
-    private void IABEventManager_consumePurchaseSucceededEvent(BazaarPlugin.BazaarPurchase purchase)
+    private async void IABEventManager_consumePurchaseSucceededEvent(BazaarPurchase purchase)
     {
-        var res = _walletStub.ConsumeKey(purchase);
+        var res = await _walletStub.ConsumePurchase(purchase);
         Log($"Consume succeeded: {purchase.ProductId}; client-side res: {res}");
     }
 
@@ -187,7 +188,7 @@ public class IABKeyDemo : MonoBehaviour, IEventListner
         while (currentTime < m_lerpTime)
         {
             currentTime += Time.deltaTime;
-            float perc = currentTime / m_lerpTime;
+            var perc = currentTime / m_lerpTime;
             m_debugContentPanel.anchoredPosition = new Vector2(m_debugContentPanel.anchoredPosition.x,
                                                                Mathf.Lerp(m_debugContentPanel.anchoredPosition.y, m_text.rectTransform.rect.height, perc));
             yield return new WaitForEndOfFrame();

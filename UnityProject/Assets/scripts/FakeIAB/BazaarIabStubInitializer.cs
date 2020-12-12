@@ -45,7 +45,6 @@ namespace neo.BazaarPluginStub
         }
     }
 
-
     public class BazaarIAB
     {
         // billing properties

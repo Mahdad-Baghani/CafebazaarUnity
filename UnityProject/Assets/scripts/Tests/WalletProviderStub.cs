@@ -1,15 +1,16 @@
-﻿using BazaarPlugin;
+﻿using System;
+using BazaarPlugin;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
 
 public enum KeyRecordSituations
 {
     ADDED_SUCCESSFULLY,
     CONSUMED_SUCCESSFULLY,
     EXISTS,
-    DOESNT_EXIST, 
+    NOT_FOUND, 
 }
 public enum KeyConsumptionRecord
 {
@@ -45,18 +46,18 @@ public class WalletProviderStub
 
     internal async  Task<KeyRecordSituations> ConsumePurchase(BazaarPurchase purchase)
     {
-        if (m_keys.Count <= 0) return KeyRecordSituations.DOESNT_EXIST;
+        if (m_keys.Count <= 0) return KeyRecordSituations.NOT_FOUND;
 
         var key = m_keys.Find(x => x.m_productId == purchase.ProductId);
         if (key == null)
         {
-            return KeyRecordSituations.DOESNT_EXIST;
+            return KeyRecordSituations.NOT_FOUND;
         }
         key.m_isUsed = true;
         return KeyRecordSituations.CONSUMED_SUCCESSFULLY;
     }
 
-    internal async Task<KeyConsumptionRecord> GetSinglePurchase(string m_skuDetail)
+    internal async Task<KeyConsumptionRecord> GetPurchase(string m_skuDetail)
     {
         if (m_keys.Count <= 0) return KeyConsumptionRecord.NOT_FOUND;
 
@@ -67,11 +68,24 @@ public class WalletProviderStub
         }
         return KeyConsumptionRecord.NOT_FOUND;
     }
+
+    internal async Task<List<Tuple<string, KeyConsumptionRecord>>> GetPurchases(IEnumerable<string> skus)
+    {
+        // return empty if caller passed no skus
+        if (!skus.Any()) return null;
+        
+        var res = new List<Tuple<string, KeyConsumptionRecord>>();
+        foreach (var sku in skus)
+        {
+            res.Add(new Tuple<string, KeyConsumptionRecord>(sku, await GetPurchase(sku)));
+        }
+
+        return res;
+    }
 }
 
 internal class BazaarPurchaseRecord
 {
-    [SerializeField]
     [JsonProperty]
     /// <summary>
     /// the Id of the purchase which is returned by CafeBazaar API and should be kept in order to keep track of purchased keys
@@ -80,13 +94,11 @@ internal class BazaarPurchaseRecord
     /// <summary>
     /// the sku of the item according to what is defined on the bazaar dashboard
     /// </summary>
-    [SerializeField]
     [JsonProperty]
     internal string m_productId;
     /// <summary>
     /// is the key used to unlocked an IABMailBox or what
     /// </summary>
-    [SerializeField]
     [JsonProperty]
     internal bool m_isUsed;
 }
